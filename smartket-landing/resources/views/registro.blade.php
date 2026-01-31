@@ -325,10 +325,10 @@
             scope.submitting = true;
 
             const payload = {
-                nombre_negocio: scope.nombreNegocio,
+                business_name: scope.nombreNegocio,
                 email: scope.email,
                 password: scope.password,
-                rubro: scope.selectedRubro,
+                business_type: scope.selectedRubro,
                 plan: scope.selectedPlan
             };
 

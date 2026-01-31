@@ -14,9 +14,9 @@ class Tenant extends BaseTenant
     
     // Permitimos asignación masiva de nuestros campos personalizados
     protected $fillable = [
-        'nombre_negocio',
+        'business_name',
         'slug',
-        'rubro',
+        'business_type',
         'logo_path',
         'db_name',
         'db_user',

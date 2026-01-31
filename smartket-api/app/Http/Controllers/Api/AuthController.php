@@ -53,70 +53,25 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        Log::info("Ejecutando AuthController@me (versión resiliente con multitenant context)");
-        $user = Auth::user();
+        Log::info("Ejecutando AuthController@me (versión simplificada vía Service)");
         
-        // Intentamos obtener el tenant actual. Si no está seteado por el middleware,
-        // intentamos resolverlo manualmente desde el header X-Tenant-ID o del primer negocio del dueño
+        $user = Auth::user();
         $tenant = \App\Models\Tenant::current();
         
+        // Resolución resiliente de tenant si no está en el contexto
         if (!$tenant && $request->hasHeader('X-Tenant-ID')) {
-            $headerTenantId = $request->header('X-Tenant-ID');
-            $tenant = \App\Models\Tenant::find($headerTenantId);
+            $tenant = \App\Models\Tenant::find($request->header('X-Tenant-ID'));
             if ($tenant) $tenant->makeCurrent();
         }
 
-        if (!$user) {
-            Log::error("AuthController@me: Usuario no autenticado.");
-            return response()->json(['message' => 'No autorizado'], 401);
+        try {
+            $responseData = $this->authService->getUserProfileData($user, $tenant);
+            Log::info("AuthController@me: Respuesta preparada exitosamente.");
+            return response()->json($responseData);
+        } catch (\Exception $e) {
+            Log::error("AuthController@me error: " . $e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 401);
         }
-
-        if (!$tenant && !($user instanceof \App\Models\Staff)) {
-            $tenant = $user->tenants()->first();
-            if ($tenant) $tenant->makeCurrent();
-        }
-
-        if (!$tenant) {
-            Log::error("AuthController@me: Tenant no encontrado.");
-            return response()->json(['message' => 'Negocio no encontrado o no asociado.'], 404);
-        }
-
-        // Cargamos la suscripción y el plan asociado.
-        $subscription = $tenant->subscriptions()->with('plan')->first();
-
-        // Si el usuario autenticado es un 'Staff', cargamos sus roles desde la BD del tenant.
-        // Si es un 'User' (dueño), simplemente le asignamos el rol de 'admin'.
-        if ($user instanceof \App\Models\Staff) {
-            $tenant->execute(fn() => $user->load('roles'));
-            $userRoles = $user->roles->pluck('name')->toArray();
-            $accessibleTenants = [$tenant->only(['id', 'nombre_negocio', 'slug', 'rubro'])];
-        } else {
-            $userRoles = ['admin'];
-            // Para el dueño, obtenemos todos sus negocios asociados
-            $accessibleTenants = $user->tenants()->get(['tenants.id', 'nombre_negocio', 'slug', 'rubro']);
-        }
-
-        $responseData = [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email ?? $user->username,
-                'roles' => $userRoles,
-            ],
-            'tenant' => [
-                'id' => $tenant->id,
-                'nombre_negocio' => $tenant->nombre_negocio,
-                'slug' => $tenant->slug,
-                'rubro' => $tenant->rubro,
-                'setup_complete' => (bool)$tenant->setup_complete,
-                'plan' => $subscription->plan ?? null,
-                'subscription_status' => $subscription->status ?? 'inactive',
-            ],
-            'accessible_tenants' => $accessibleTenants
-        ];
-
-        Log::info("AuthController@me: Respuesta JSON preparada exitosamente.");
-        return response()->json($responseData);
     }
 
     public function logout(Request $request)

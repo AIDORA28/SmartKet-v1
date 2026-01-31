@@ -8,6 +8,7 @@ const BusinessTypeSettings = () => import('../views/BusinessTypeSettings.vue')
 const AppLayout = () => import('../layouts/AppLayout.vue')
 const Onboarding = () => import('../views/Onboarding.vue')
 const SetupFiscal = () => import('../views/SetupFiscal.vue')
+const SelectBranch = () => import('../views/SelectBranch.vue')
 
 // Pollería module views (lazy-loaded)
 const PolleriaMesero = () => import('../views/polleria/MeseroOrders.vue')
@@ -16,6 +17,11 @@ const PolleriaCaja = () => import('../views/polleria/CajaPOS.vue')
 const PolleriaDelivery = () => import('../views/polleria/DeliveryScreen.vue')
 const PolleriaAlmacen = () => import('../views/polleria/AlmacenInventory.vue')
 const PolleriaAdmin = () => import('../views/polleria/AdminPanel.vue')
+
+// Admin System Views
+const RolesPage = () => import('../views/admin/RolesPage.vue')
+const StaffPage = () => import('../views/admin/StaffPage.vue')
+
 
 const routes = [
   {
@@ -35,8 +41,14 @@ const routes = [
       { path: 'polleria/delivery', name: 'polleria-delivery', component: PolleriaDelivery, meta: { roles: ['delivery'] } },
       { path: 'polleria/almacen', name: 'polleria-almacen', component: PolleriaAlmacen, meta: { roles: ['almacen'] } },
       { path: 'polleria/admin', name: 'polleria-admin', component: PolleriaAdmin, meta: { roles: ['admin'] } },
+
+      // Admin System Routes
+      { path: 'admin/roles', name: 'admin-roles', component: RolesPage, meta: { roles: ['admin'] } },
+      { path: 'admin/staff', name: 'admin-staff', component: StaffPage, meta: { roles: ['admin'] } },
+      { path: 'admin/staff', name: 'admin-staff', component: StaffPage, meta: { roles: ['admin'] } },
     ],
   },
+  { path: '/select-branch', name: 'select-branch', component: SelectBranch },
   // Redirect legacy URLs to the new /app prefix
   { path: '/:pathMatch(.*)*', redirect: to => `/app/${to.params.pathMatch.join('/')}` },
 ]
@@ -68,10 +80,11 @@ router.beforeEach(async (to) => {
     return { path: to.path, query: {}, replace: true }
   }
 
-  // 2. Si el estado del usuario aún no se ha cargado (ej. en un F5), lo cargamos ahora.
   if (authStore.state.isLoading) {
     try {
       await authStore.fetchUser()
+      // Recuperar branch si existe
+      authStore.loadBranchFromStorage()
     } catch (e) {
       console.error('Error in router while fetching user:', e)
     }
@@ -80,11 +93,28 @@ router.beforeEach(async (to) => {
   const isAuthenticated = authStore.state.isAuthenticated
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 
-  // 3. Lógica de redirección
+  // 3. Lógica de redirección auth
   if (requiresAuth && !isAuthenticated) {
     const landing = import.meta.env.VITE_LANDING_URL || 'http://localhost:8002'
     window.location.href = `${landing}/login`
-    return false // Detener navegación actual
+    return false
+  }
+
+  // 3.5 Lógica de Selección de Sucursal
+  if (isAuthenticated && to.name !== 'select-branch' && requiresAuth) {
+    const userBranches = authStore.state.user?.branches || []
+    const currentBranch = authStore.state.current_branch
+
+    // Si no ha seleccionado branch y tiene > 0 branches
+    if (!currentBranch && userBranches.length > 0) {
+      // Si solo tiene una, autoseleccionar
+      if (userBranches.length === 1) {
+        authStore.setBranch(userBranches[0])
+      } else {
+        // Si tiene varias, forzar selección
+        return { name: 'select-branch' }
+      }
+    }
   }
 
   // 4. Lógica de roles

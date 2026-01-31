@@ -14,6 +14,13 @@ class RegisterRequest extends FormRequest
         return true; // Permitir todas las solicitudes, ya que es una ruta pública
     }
 
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        throw new \Illuminate\Http\Exceptions\HttpResponseException(
+            response()->json(['errors' => $validator->errors()], 422)
+        );
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,10 +29,10 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre_negocio' => 'required|string|min:3|max:255',
+            'business_name' => 'required|string|min:3|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => ['required','string','min:8','regex:/^(?=.*[A-Z])(?=.*\d).{8,}$/'],
-            'rubro' => 'required|string|in:polleria',
+            'business_type' => 'required|string|in:polleria,minimarket,restaurante,farmacia,horeca,retail,service',
         ];
     }
 }

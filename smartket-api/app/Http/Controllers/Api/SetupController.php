@@ -13,8 +13,8 @@ class SetupController extends Controller
         $current = FiscalSetting::query()->latest('id')->first();
         return response()->json([
             'ruc' => $current?->ruc,
-            'razon_social' => $current?->razon_social,
-            'comprobante_default' => $current?->comprobante_default,
+            'legal_name' => $current?->legal_name,
+            'default_receipt_type' => $current?->default_receipt_type,
             'boleta_simple_enabled' => (bool)($current?->boleta_simple_enabled ?? true),
         ]);
     }
@@ -23,15 +23,15 @@ class SetupController extends Controller
     {
         $data = $request->validate([
             'ruc' => ['nullable','regex:/^\d{11}$/'],
-            'razon_social' => 'nullable|string|min:2|max:255',
-            'comprobante_default' => 'nullable|string|in:boleta,factura',
+            'legal_name' => 'nullable|string|min:2|max:255',
+            'default_receipt_type' => 'nullable|string|in:boleta,factura',
             'boleta_simple_enabled' => 'nullable|boolean',
         ]);
 
         $settings = FiscalSetting::query()->latest('id')->first() ?? new FiscalSetting();
         $settings->ruc = $data['ruc'] ?? $settings->ruc;
-        $settings->razon_social = $data['razon_social'] ?? $settings->razon_social;
-        $settings->comprobante_default = $data['comprobante_default'] ?? $settings->comprobante_default;
+        $settings->legal_name = $data['legal_name'] ?? $settings->legal_name;
+        $settings->default_receipt_type = $data['default_receipt_type'] ?? $settings->default_receipt_type;
         if (array_key_exists('boleta_simple_enabled', $data)) {
             $settings->boleta_simple_enabled = (bool) $data['boleta_simple_enabled'];
         }

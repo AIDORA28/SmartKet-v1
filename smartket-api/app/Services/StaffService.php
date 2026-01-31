@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Staff;
 use App\Models\StaffIndex;
 use App\Models\Tenant;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -25,8 +26,17 @@ class StaffService
                     'name' => $data['name'],
                     'username' => $username,
                     'password' => Hash::make($data['password']),
+                    'branch_id' => null, // Ya no usamos branch_id principal obligatorio, todo va por tabla pivote
                 ]);
-                $staff->roles()->sync($data['roles']);
+                
+                if (isset($data['roles'])) {
+                    $staff->roles()->sync($data['roles']);
+                }
+                
+                if (isset($data['branches'])) {
+                    $staff->branches()->sync($data['branches']);
+                }
+                
                 return $staff;
             });
 
@@ -58,6 +68,10 @@ class StaffService
 
             if (isset($data['roles'])) {
                 $staffMember->roles()->sync($data['roles']);
+            }
+
+            if (isset($data['branches'])) {
+                $staffMember->branches()->sync($data['branches']);
             }
             
             return $staffMember;

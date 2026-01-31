@@ -11,13 +11,13 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Razón Social</label>
-        <input v-model="form.razon_social" placeholder="Mi Negocio S.A.C." class="input" />
+        <label class="block text-sm font-medium text-gray-700">Razón Social (Legal Name)</label>
+        <input v-model="form.legal_name" placeholder="Mi Negocio S.A.C." class="input" />
       </div>
 
       <div>
         <label class="block text-sm font-medium text-gray-700">Comprobante por defecto</label>
-        <select v-model="form.comprobante_default" class="input">
+        <select v-model="form.default_receipt_type" class="input">
           <option value="">Selecciona…</option>
           <option value="boleta">Boleta</option>
           <option value="factura">Factura</option>
@@ -42,7 +42,7 @@
 import { ref, onMounted } from 'vue'
 import { api, audit } from '@/api'
 
-const form = ref({ ruc: '', razon_social: '', comprobante_default: '', boleta_simple_enabled: true })
+const form = ref({ ruc: '', legal_name: '', default_receipt_type: '', boleta_simple_enabled: true })
 const busy = ref(false)
 const message = ref('')
 const msgClass = ref('text-gray-600')
@@ -52,8 +52,8 @@ onMounted(async () => {
     const { data } = await api.get('/setup/fiscal')
     form.value = {
       ruc: data?.ruc || '',
-      razon_social: data?.razon_social || '',
-      comprobante_default: data?.comprobante_default || '',
+      legal_name: data?.legal_name || '',
+      default_receipt_type: data?.default_receipt_type || '',
       boleta_simple_enabled: data?.boleta_simple_enabled ?? true,
     }
   } catch (err) {

@@ -18,11 +18,11 @@ class RegisterFlowTest extends TestCase
 
         // Register a new tenant and owner user
         $payload = [
-            'nombre_negocio' => 'Mi Negocio de Prueba',
+            'business_name' => 'Mi Negocio de Prueba',
             'email' => 'owner@example.com',
             'password' => 'Password1', // meets regex
             'plan' => 'basic',
-            'rubro' => 'polleria',
+            'business_type' => 'polleria',
         ];
 
         $register = $this->postJson('/api/register', $payload);

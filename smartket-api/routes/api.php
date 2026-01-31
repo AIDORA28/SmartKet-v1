@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RegisterController;
-use App\Http\Controllers\Api\ProductoController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\AuditController;
 use App\Http\Controllers\Api\SetupController;
@@ -35,7 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
         \App\Http\Middleware\CheckSubscriptionStatus::class
     ])->group(function () {
         // Endpoint protegido: devuelve productos del tenant
-        Route::get('/productos', [ProductoController::class, 'index']);
+        Route::get('/products', [ProductController::class, 'index'])
+            ->middleware('permission:products.view');
 
         // Setup Wizard: Datos fiscales (tenant DB activa)
         Route::get('/setup/fiscal', [SetupController::class, 'fiscalShow']);
@@ -44,14 +45,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Nuevo endpoint para obtener los entitlements
         Route::get('/tenant/entitlements', [TenantController::class, 'getEntitlements']);
 
-        // --- Gestión de Staff (solo para admins) ---
-        Route::middleware('can:admin')->group(function () {
+        // --- Gestión de Staff (solo para admins o usuarios con permiso) ---
+        Route::middleware('permission:staff.manage')->group(function () {
             Route::apiResource('staff', \App\Http\Controllers\Api\StaffController::class);
             Route::get('/roles', fn() => \App\Models\Role::all());
-            
+            Route::apiResource('branches', \App\Http\Controllers\Api\BranchController::class); // <--- NUEVA RUTA
+        });    
             Route::get('/modules', [\App\Http\Controllers\Api\ModuleController::class, 'index']);
             Route::post('/tenant/modules', [\App\Http\Controllers\Api\ModuleController::class, 'sync']);
-        });
 
         // --- Módulo Pollería (requiere tenant activo) ---
         Route::get('/polleria/menu', [PolleriaController::class, 'menu']);

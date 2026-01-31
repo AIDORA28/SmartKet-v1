@@ -28,10 +28,10 @@ class RegisterController extends Controller
         try {
             // 1. Usar el TenantService para crear el negocio (esto ya no es un comando)
             $this->tenantService->createTenant(
-                $data['nombre_negocio'],
+                $data['business_name'],
                 $data['email'],
                 $data['password'],
-                $data['rubro']
+                $data['business_type']
             );
 
             // 2. Si la creación es exitosa, usar el AuthService para iniciar sesión

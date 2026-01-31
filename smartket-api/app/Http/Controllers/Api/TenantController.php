@@ -9,44 +9,51 @@ use App\Models\Staff;
 
 class TenantController extends Controller
 {
+    protected \App\Services\TenantService $tenantService;
+
+    public function __construct(\App\Services\TenantService $tenantService)
+    {
+        $this->tenantService = $tenantService;
+    }
+
     public function show(Request $request)
     {
-        $tenantId = $request->header('X-Tenant-ID');
-        if (! $tenantId) {
-            return response()->json(['message' => 'X-Tenant-ID header is required'], 400);
+        $tenant = Tenant::current();
+
+        if (!$tenant && $request->hasHeader('X-Tenant-ID')) {
+            $tenant = Tenant::find($request->header('X-Tenant-ID'));
         }
 
-        $tenant = Tenant::find($tenantId);
         if (! $tenant) {
             return response()->json(['message' => 'Tenant not found'], 404);
         }
 
         return response()->json([
             'id' => $tenant->id,
-            'nombre_negocio' => $tenant->nombre_negocio,
+            'business_name' => $tenant->business_name,
             'plan' => $tenant->plan,
-            'rubro' => $tenant->rubro,
+            'business_type' => $tenant->business_type,
             'setup_complete' => (bool) $tenant->setup_complete,
         ]);
     }
 
     public function update(Request $request)
     {
-        $tenantId = $request->header('X-Tenant-ID');
-        if (! $tenantId) {
-            return response()->json(['message' => 'X-Tenant-ID header is required'], 400);
+        $tenant = Tenant::current();
+
+        if (!$tenant && $request->hasHeader('X-Tenant-ID')) {
+            $tenant = Tenant::find($request->header('X-Tenant-ID'));
         }
 
-        $tenant = Tenant::find($tenantId);
         if (! $tenant) {
             return response()->json(['message' => 'Tenant not found'], 404);
         }
 
         $data = $request->validate([
-            'rubro' => 'required|string|in:minimarket,polleria,restaurante,farmacia',
+            'business_type' => 'required|string|in:minimarket,polleria,restaurante,farmacia',
         ]);
 
-        $tenant->rubro = $data['rubro'];
+        $tenant->business_type = $data['business_type'];
         $tenant->setup_complete = true; // marcamos el onboarding como completo
         $tenant->save();
 
@@ -54,9 +61,9 @@ class TenantController extends Controller
             'message' => 'Tenant actualizado',
             'tenant' => [
                 'id' => $tenant->id,
-                'nombre_negocio' => $tenant->nombre_negocio,
+                'business_name' => $tenant->business_name,
                 'plan' => $tenant->plan,
-                'rubro' => $tenant->rubro,
+                'business_type' => $tenant->business_type,
                 'setup_complete' => (bool) $tenant->setup_complete,
             ],
         ]);
@@ -70,53 +77,7 @@ class TenantController extends Controller
             return response()->json(['message' => 'Tenant not found'], 404);
         }
 
-        $tenant->load(['plan', 'modules']);
-
-        $entitlements = [
-            'seats' => [],
-            'modules' => [],
-        ];
-
-        $allModules = \App\Models\Module::all();
-        $purchasedModules = $tenant->modules->keyBy('identifier');
-
-        $staffRolesCount = $tenant->execute(function() {
-            $counts = [];
-            $staffWithRoles = Staff::with('roles')->get();
-
-            foreach ($staffWithRoles as $staffMember) {
-                foreach ($staffMember->roles as $role) {
-                    if ($role instanceof \App\Models\Role) {
-                        if (!isset($counts[$role->name])) {
-                            $counts[$role->name] = 0;
-                        }
-                        $counts[$role->name]++;
-                    }
-                }
-            }
-            return collect($counts);
-        });
-
-        foreach ($allModules as $module) {
-            if ($module->type === 'seat') {
-                $identifier = $module->identifier;
-                $roleName = str_replace('seat_', '', $identifier);
-                $purchasedModule = $purchasedModules->get($identifier);
-
-                $entitlements['seats'][] = [
-                    'identifier' => $identifier,
-                    'name' => $module->name,
-                    'limit' => $purchasedModule ? $purchasedModule->pivot->quantity : 0,
-                    'current' => $staffRolesCount->get($roleName, 0),
-                ];
-            } else {
-                $entitlements['modules'][] = [
-                    'identifier' => $module->identifier,
-                    'name' => $module->name,
-                    'enabled' => $purchasedModules->has($module->identifier),
-                ];
-            }
-        }
+        $entitlements = $this->tenantService->getEntitlements($tenant);
 
         return response()->json($entitlements);
     }

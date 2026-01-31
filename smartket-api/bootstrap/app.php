@@ -17,6 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Middleware para leer el token desde la cookie HttpOnly
         $middleware->prepend(\App\Http\Middleware\AuthenticateWithCookie::class);
+
+        // Auditoría Global (ISO 27001)
+        $middleware->append(\App\Http\Middleware\AuditMiddleware::class);
+
+        // Alias para RBAC Granular
+        $middleware->alias([
+            'permission' => \App\Http\Middleware\CheckPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

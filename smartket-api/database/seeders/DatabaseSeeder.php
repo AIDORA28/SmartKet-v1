@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
     {
         // Seeders de la base de datos principal (landlord)
         $this->call(\Database\Seeders\PlanSeeder::class);
-        $this->call(\Database\Seeders\RoleSeeder::class);
         $this->call(\Database\Seeders\ModuleSeeder::class);
     }
 }

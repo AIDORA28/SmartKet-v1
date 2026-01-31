@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Producto extends Model
+use App\Traits\BelongsToTenant;
+use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
+
+class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, UsesTenantConnection, BelongsToTenant;
 
     // La tabla del tenant es 'products'
     protected $table = 'products';

@@ -4,11 +4,14 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleResolution": "bundler",
+        "baseUrl": ".",
         "strict": true,
         "jsx": "preserve",
         "sourceMap": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "skipLibCheck": true,
+        "allowJs": true,
         "lib": [
             "ESNext",
             "DOM"
@@ -23,7 +26,10 @@
         "src/**/*.ts",
         "src/**/*.d.ts",
         "src/**/*.tsx",
-        "src/**/*.vue"
+        "src/**/*.vue",
+        "src/**/*.js",
+        "src/**/*.jsx",
+        "vite.config.js"
     ],
     "exclude": [
         "node_modules"

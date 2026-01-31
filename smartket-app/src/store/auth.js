@@ -58,16 +58,28 @@ const actions = {
   },
 
   /**
+   * Establece la sucursal actual de trabajo.
+   */
+  setBranch(branch) {
+    state.current_branch = branch
+    localStorage.setItem('smartket_branch_id', branch.id)
+    localStorage.setItem('smartket_branch_name', branch.name)
+  },
+
+  /**
    * Limpia todos los datos de autenticación del estado y del localStorage.
    */
   clearAuthData() {
     state.user = null
     state.tenant = null
-    state.entitlements = null // <-- LIMPIAR TAMBIÉN
+    state.current_branch = null // <-- LIMPIAR
+    state.entitlements = null
     state.isAuthenticated = false
     state.isLoading = false
     localStorage.removeItem('smartket_token')
     localStorage.removeItem('smartket_tenant_id')
+    localStorage.removeItem('smartket_branch_id') // <-- LIMPIAR
+    localStorage.removeItem('smartket_branch_name')
   },
 }
 
@@ -79,4 +91,12 @@ const actions = {
 export const authStore = {
   state: readonly(state),
   ...actions,
+  // Helper para recuperar branch al recargar
+  loadBranchFromStorage() {
+    const id = localStorage.getItem('smartket_branch_id')
+    const name = localStorage.getItem('smartket_branch_name')
+    if (id && name) {
+      state.current_branch = { id, name }
+    }
+  }
 }

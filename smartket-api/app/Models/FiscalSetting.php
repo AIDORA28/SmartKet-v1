@@ -5,22 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\BelongsToTenant;
+
 class FiscalSetting extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $table = 'fiscal_settings';
 
     protected $fillable = [
         'ruc',
-        'razon_social',
-        'comprobante_default',
+        'legal_name',
+        'default_receipt_type',
         'boleta_simple_enabled',
     ];
 
     protected $casts = [
         'ruc' => 'encrypted',
-        'razon_social' => 'encrypted',
+        'legal_name' => 'encrypted',
         'boleta_simple_enabled' => 'boolean',
     ];
 }

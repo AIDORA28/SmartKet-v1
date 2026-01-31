@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class CreateTenant extends Command
 {
-    protected $signature = 'tenant:create {nombre_negocio} {email_dueño} {pass_dueño} {--rubro=polleria}';
+    protected $signature = 'tenant:create {business_name} {email_owner} {pass_owner} {--business_type=polleria}';
     protected $description = 'Crea un nuevo tenant utilizando el TenantService.';
 
     protected TenantService $tenantService;
@@ -21,19 +21,19 @@ class CreateTenant extends Command
 
     public function handle(): int
     {
-        $nombreNegocio = $this->argument('nombre_negocio');
-        $emailDueno = $this->argument('email_dueño');
-        $passDueno = $this->argument('pass_dueño');
-        $rubro = $this->option('rubro');
+        $businessName = $this->argument('business_name');
+        $emailOwner = $this->argument('email_owner');
+        $passOwner = $this->argument('pass_owner');
+        $businessType = $this->option('business_type');
 
         $this->info("Iniciando el proceso de creación del tenant para: $emailDueno");
 
         try {
             $tenant = $this->tenantService->createTenant(
-                $nombreNegocio,
-                $emailDueno,
-                $passDueno,
-                $rubro
+                $businessName,
+                $emailOwner,
+                $passOwner,
+                $businessType
             );
 
             $this->info('¡Negocio creado con éxito!');

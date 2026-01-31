@@ -55,10 +55,10 @@ class DiagnoseAuth extends Command
         $dbName = (string)($this->option('db-name') ?? '');
         if ($dbName !== '') {
             $tenant = Tenant::where('db_name', $dbName)->first();
-            $this->line('Probe tenant by db_name: '.($tenant ? ('id='.$tenant->id.' nombre_negocio='.$tenant->nombre_negocio) : 'NONE'));
+            $this->line('Probe tenant by db_name: '.($tenant ? ('id='.$tenant->id.' business_name='.$tenant->business_name) : 'NONE'));
         } else {
-            $tenant = Tenant::where('nombre_negocio', 'ILIKE', '%polleria%')->latest('id')->first();
-            $this->line('Probe tenant by nombre_negocio like polleria: '.($tenant ? ('id='.$tenant->id.' db_name='.$tenant->db_name) : 'NONE'));
+            $tenant = Tenant::where('business_name', 'ILIKE', '%polleria%')->latest('id')->first();
+            $this->line('Probe tenant by business_name like polleria: '.($tenant ? ('id='.$tenant->id.' db_name='.$tenant->db_name) : 'NONE'));
         }
 
         // Pivot relations
