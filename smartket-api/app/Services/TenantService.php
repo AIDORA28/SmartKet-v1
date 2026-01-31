@@ -70,8 +70,10 @@ class TenantService
 
     private function createPostgresDatabase(string $nombreNegocio): array
     {
-        $dbName = 'smartket_' . Str::lower(Str::random(12));
-        $dbUser = 'user_' . Str::lower(Str::random(12));
+        $slug = Str::slug($nombreNegocio);
+        $suffix = Str::lower(Str::random(4));
+        $dbName = 'smartket_' . $slug . '_' . $suffix;
+        $dbUser = 'user_' . $slug . '_' . $suffix;
         $dbPasswordPlain = Str::random(16);
 
         Log::info("TenantService: Creando DB '$dbName' y usuario '$dbUser'.");

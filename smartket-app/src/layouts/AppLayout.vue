@@ -12,7 +12,7 @@
             </button>
           </div>
           <div class="flex flex-shrink-0 items-center px-6 py-5">
-            <img class="h-8 w-auto filter brightness-0 invert" src="/img/SmartKet.svg" alt="SmartKet" />
+            <img class="h-8 w-auto filter brightness-0 invert" :src="logo" alt="SmartKet" />
             <span class="ml-3 text-xl font-bold text-white uppercase tracking-wider">SmartKet</span>
           </div>
           <nav class="flex-1 space-y-1 px-4 pb-4 overflow-y-auto">
@@ -59,7 +59,7 @@
     <aside class="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 z-50">
       <div class="flex flex-col flex-grow bg-gradient-to-b from-red-600 to-red-800 overflow-y-auto">
         <div class="flex items-center flex-shrink-0 px-6 py-8">
-          <img class="h-10 w-auto filter brightness-0 invert" src="/img/SmartKet.svg" alt="SmartKet" />
+          <img class="h-10 w-auto filter brightness-0 invert" :src="logo" alt="SmartKet" />
           <div class="ml-4">
             <h1 class="text-white font-black text-xl leading-none">SMART<span class="text-yellow-400">KET</span></h1>
             <p class="text-red-200 text-[10px] uppercase tracking-[0.2em] font-bold">Business Suite</p>
@@ -203,6 +203,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { authStore } from '../store/auth'
+import logo from '../assets/logo.svg'
 import { api, audit } from '@/api'
 import SetupPrompt from '@/components/SetupPrompt.vue'
 import { 

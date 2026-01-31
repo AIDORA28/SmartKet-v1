@@ -52,22 +52,29 @@ export const router = createRouter({
  * Resuelve el problema de la "página en blanco" al asegurar que los datos
  * del usuario existan ANTES de renderizar una ruta privada.
  */
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   // 1. Capturar y almacenar el token/tenant si vienen en la URL desde el landing.
   const tokenFromQuery = to.query.token
   const tenantIdFromQuery = to.query.tenantId
+
   if (tokenFromQuery && tenantIdFromQuery) {
     localStorage.setItem('smartket_token', tokenFromQuery)
     localStorage.setItem('smartket_tenant_id', tenantIdFromQuery)
-    
-    // Limpiamos la URL para no dejar credenciales visibles y recargamos el estado.
+
+    // Recargamos el estado del usuario inmediatamente
     await authStore.fetchUser()
-    return next({ path: to.path, replace: true })
+
+    // Limpiamos la URL redirigiendo a la misma ruta pero sin queries
+    return { path: to.path, query: {}, replace: true }
   }
 
   // 2. Si el estado del usuario aún no se ha cargado (ej. en un F5), lo cargamos ahora.
   if (authStore.state.isLoading) {
-    await authStore.fetchUser()
+    try {
+      await authStore.fetchUser()
+    } catch (e) {
+      console.error('Error in router while fetching user:', e)
+    }
   }
 
   const isAuthenticated = authStore.state.isAuthenticated
@@ -75,27 +82,24 @@ router.beforeEach(async (to, from, next) => {
 
   // 3. Lógica de redirección
   if (requiresAuth && !isAuthenticated) {
-    // Si la ruta requiere autenticación y el usuario no está autenticado,
-    // lo redirigimos a la página de login.
     const landing = import.meta.env.VITE_LANDING_URL || 'http://localhost:8002'
     window.location.href = `${landing}/login`
-    return
+    return false // Detener navegación actual
   }
 
-  // Lógica de roles (se puede expandir en el futuro)
+  // 4. Lógica de roles
   const requiredRoles = to.meta.roles || []
   const userRoles = authStore.state.user?.roles || []
-  
+
   if (requiresAuth && requiredRoles.length > 0) {
     const hasRole = requiredRoles.some(role => userRoles.includes(role) || userRoles.includes('admin'))
     if (!hasRole) {
-      // Si el usuario no tiene el rol necesario, redirigir al dashboard.
-      return next({ name: 'dashboard' })
+      return { name: 'dashboard' }
     }
   }
 
-  // 4. Si todo está en orden, permitir la navegación.
-  next()
+  // 5. Si todo está en orden, permitir la navegación.
+  return true
 })
 
 export default router

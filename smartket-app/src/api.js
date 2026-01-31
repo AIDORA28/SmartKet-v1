@@ -10,11 +10,16 @@ export const api = axios.create({
 // Attach Tenant ID header on every request
 api.interceptors.request.use(
   (config) => {
-    // El token ya no se envía manualmente en el header Authorization, 
-    // se envía automáticamente vía cookie HttpOnly gracias a withCredentials: true
+    // Obtenemos el token y el tenant del localStorage
+    const token = localStorage.getItem('smartket_token')
     const tenantId = localStorage.getItem('smartket_tenant_id')
 
     config.headers = config.headers || {}
+
+    // Si hay token, lo enviamos como Bearer (Prioridad sobre cookies si el backend lo permite)
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
 
     // Agregamos el header X-Tenant-ID que nuestra API requiere
     if (tenantId) {

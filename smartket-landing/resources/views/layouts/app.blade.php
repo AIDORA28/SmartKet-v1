@@ -8,12 +8,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    @if(!Route::is('login') && !Route::is('registro'))
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+            <div class="flex justify-between h-20">
                 <a href="{{ url('/') }}" class="flex items-center" aria-label="Ir al landing de SmartKet">
-                    <img src="/img/SmartKet.svg" alt="SmartKet" class="h-10 w-auto" />
-                    <span class="ml-3 text-xl font-bold">
+                    <img src="/img/SmartKet.svg" alt="SmartKet" class="h-12 w-auto" />
+                    <span class="ml-3 text-2xl font-bold">
                         <span class="text-amber-500 uppercase tracking-wide">SMART</span>
                         <span class="text-gray-900 lowercase">ket</span>
                     </span>
@@ -25,9 +26,14 @@
             </div>
         </div>
     </nav>
+    @endif
     <div class="min-h-screen">
         @yield('content')
     </div>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <!-- Alpine.js Plugins -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <!-- Alpine.js Core -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

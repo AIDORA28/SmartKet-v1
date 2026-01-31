@@ -33,8 +33,9 @@ class AuthController extends Controller
 
         $token = $result['token'];
 
-        // Senior Security: Devolvemos el token en una cookie HttpOnly para evitar ataques XSS
+        // Devolvemos el token TANTO en el JSON como en la cookie para máxima compatibilidad
         return response()->json([
+            'token' => $token,
             'tenant_id' => $result['tenant']->id,
             'message' => 'Login exitoso',
         ])->cookie(
@@ -52,13 +53,32 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        Log::info("Ejecutando AuthController@me (versión refactorizada con multitenant context)");
+        Log::info("Ejecutando AuthController@me (versión resiliente con multitenant context)");
         $user = Auth::user();
+        
+        // Intentamos obtener el tenant actual. Si no está seteado por el middleware,
+        // intentamos resolverlo manualmente desde el header X-Tenant-ID o del primer negocio del dueño
         $tenant = \App\Models\Tenant::current();
+        
+        if (!$tenant && $request->hasHeader('X-Tenant-ID')) {
+            $headerTenantId = $request->header('X-Tenant-ID');
+            $tenant = \App\Models\Tenant::find($headerTenantId);
+            if ($tenant) $tenant->makeCurrent();
+        }
 
-        if (!$user || !$tenant) {
-            Log::error("AuthController@me: Usuario o Tenant no encontrado.");
+        if (!$user) {
+            Log::error("AuthController@me: Usuario no autenticado.");
             return response()->json(['message' => 'No autorizado'], 401);
+        }
+
+        if (!$tenant && !($user instanceof \App\Models\Staff)) {
+            $tenant = $user->tenants()->first();
+            if ($tenant) $tenant->makeCurrent();
+        }
+
+        if (!$tenant) {
+            Log::error("AuthController@me: Tenant no encontrado.");
+            return response()->json(['message' => 'Negocio no encontrado o no asociado.'], 404);
         }
 
         // Cargamos la suscripción y el plan asociado.
