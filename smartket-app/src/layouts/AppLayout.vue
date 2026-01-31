@@ -54,40 +54,22 @@ const hasMultipleTenants = computed(() => accessibleTenants.value.length > 1)
 const themeClass = computed(() => `theme-${currentTenant.value?.business_type || 'default'}`)
 
 // Navigation Definition (Inspired by V5)
+// Navigation Definition (SmartKet v5 Standard)
 const navigation = computed(() => {
-  const all = [
-    { name: 'Dashboard', href: '/app/dashboard', emoji: '🏠' },
-    { 
-        name: 'Core', 
-        emoji: '⚙️',
-        expandable: true,
-        subModules: [
-            { name: 'Ajustes de Empresa', href: '/app/settings/company' },
-            { name: 'Gestión de Sucursales', href: '/app/settings/branches' },
-            { name: 'Usuarios y Roles', href: '/app/settings/users' }
-        ]
-    },
-    { name: 'Productos', href: '/app/productos', emoji: '📦', badge: 'Admin' },
+  return [
+    { name: 'Dashboard', href: '/app/dashboard', emoji: '📊' }, //, icon: HomeIcon },
+    { name: 'POS', href: '/app/ventas', emoji: '💳', badge: 'Principal' },
+    { name: 'Cajas', href: '/app/finanzas', emoji: '💰' },
     { name: 'Ventas', href: '/app/ventas', emoji: '🛒' },
-    { name: 'Inventario', href: '/app/inventario', emoji: '📉' }
+    { name: 'Clientes', href: '/app/clientes', emoji: '👥' },
+    { name: 'Productos', href: '/app/productos', emoji: '📦' },
+    { name: 'Inventario', href: '/app/inventario', emoji: '📋' },
+    { name: 'Compras', href: '/app/proveedores', emoji: '🛍️' },
+    { name: 'Proveedores', href: '/app/proveedores', emoji: '🚚' },
+    { name: 'Lotes', href: '/app/inventario', emoji: '🗂️' },
+    { name: 'Reportes', href: '/app/reportes', emoji: '📈' },
+    { name: 'Analytics', href: '/app/reportes', emoji: '🔬', badge: 'Pro' }
   ]
-  
-  // Specific modules by business type
-  if (currentTenant.value?.business_type === 'polleria') {
-    all.push({ 
-        name: 'Pollería', 
-        emoji: '🍗',
-        expandable: true,
-        subModules: [
-            { name: 'Mesas / Mesero', href: '/app/polleria/mesero' },
-            { name: 'Cocina', href: '/app/polleria/cocina' },
-            { name: 'Caja', href: '/app/polleria/caja' },
-            { name: 'Delivery', href: '/app/polleria/delivery' }
-        ]
-    })
-  }
-
-  return all
 })
 
 const currentSucursal = computed(() => authStore.state.current_branch || { name: 'Principal' })

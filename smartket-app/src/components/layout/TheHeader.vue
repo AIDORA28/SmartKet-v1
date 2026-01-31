@@ -56,7 +56,17 @@
       <div class="h-8 w-px bg-gray-200"></div>
 
       <!-- User Menu -->
-      <div class="flex items-center space-x-3 group cursor-pointer">
+      <div class="flex items-center space-x-3 gap-2">
+         <!-- Owner Admin Button -->
+         <button 
+           v-if="user?.roles?.includes('owner')"
+           @click="$router.push({ name: 'owner-dashboard' })"
+           class="hidden md:flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:bg-gray-800 transition-transform active:scale-95"
+         >
+            <span class="material-icons text-sm">business_center</span>
+            Gestionar Negocio
+         </button>
+
          <div class="text-right hidden sm:block">
             <p class="text-xs font-bold text-gray-900 leading-none group-hover:text-red-600 transition-colors">{{ user?.name }}</p>
             <p class="text-[10px] text-gray-500 uppercase mt-1">{{ user?.roles?.[0] || 'Staff' }}</p>

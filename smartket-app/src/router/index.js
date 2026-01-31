@@ -18,6 +18,9 @@ const PolleriaDelivery = () => import('../views/polleria/DeliveryScreen.vue')
 const PolleriaAlmacen = () => import('../views/polleria/AlmacenInventory.vue')
 const PolleriaAdmin = () => import('../views/polleria/AdminPanel.vue')
 
+const ComingSoon = () => import('../views/ComingSoon.vue')
+const OwnerDashboard = () => import('../views/core/OwnerDashboard.vue')
+
 // Admin System Views
 const RolesPage = () => import('../views/admin/RolesPage.vue')
 const StaffPage = () => import('../views/admin/StaffPage.vue')
@@ -30,7 +33,20 @@ const routes = [
     meta: { requiresAuth: true },
     children: [
       { path: 'dashboard', name: 'dashboard', component: Dashboard },
+      { path: 'core/dashboard', name: 'owner-dashboard', component: OwnerDashboard }, // New Owner Panel
+      { path: 'core/roles', name: 'admin-roles', component: RolesPage }, // Moved to core context concept
+      { path: 'core/staff', name: 'admin-staff', component: StaffPage }, // Moved to core context concept
+
       { path: 'productos', name: 'productos', component: Productos },
+
+      // Core Business Modules (Placeholders for now)
+      { path: 'ventas', name: 'ventas', component: ComingSoon },
+      { path: 'inventario', name: 'inventario', component: ComingSoon },
+      { path: 'clientes', name: 'clientes', component: ComingSoon },
+      { path: 'proveedores', name: 'proveedores', component: ComingSoon },
+      { path: 'finanzas', name: 'finanzas', component: ComingSoon },
+      { path: 'reportes', name: 'reportes', component: ComingSoon },
+
       { path: 'settings/business-type', name: 'settings-business-type', component: BusinessTypeSettings },
       { path: 'onboarding', name: 'onboarding', component: Onboarding },
       { path: 'setup/fiscal', name: 'setup-fiscal', component: SetupFiscal },
