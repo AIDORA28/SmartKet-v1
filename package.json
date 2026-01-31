@@ -1,0 +1,16 @@
+{
+    "name": "smartket-workspace",
+    "version": "1.0.0",
+    "description": "SmartKet Project Orchestrator",
+    "private": true,
+    "scripts": {
+        "dev:api": "cd smartket-api && php artisan serve",
+        "dev:landing": "cd smartket-landing && php artisan serve --port=8002",
+        "dev:landing:css": "cd smartket-landing && npm run dev",
+        "dev:app": "cd smartket-app && npm run dev",
+        "dev": "concurrently -n \"API,LANDING-SRV,LANDING-CSS,APP\" -c \"bgBlue,bgGreen,bgMagenta,bgCyan\" \"npm run dev:api\" \"npm run dev:landing\" \"npm run dev:landing:css\" \"npm run dev:app\""
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.2"
+    }
+}

@@ -1,0 +1,29 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Laravel / PHP
+vendor/
+.env
+.env.backup
+.env.production
+composer.lock
+package-lock.json
+
+# Build assets
+public/build/
+public/hot
+dist/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Project Specific
+SmartKet-v5/
+SmartKet-v5.rar
+*.tmp
+*.log

@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definición de la paleta de colores con CSS Variables */
+:root {
+  /* Tema por defecto (colores neutros) */
+  --sidebar-bg: #1f2937; /* gray-800 */
+  --sidebar-text: #d1d5db; /* gray-300 */
+  --sidebar-text-hover: #ffffff;
+  --sidebar-bg-hover: #374151; /* gray-700 */
+  --sidebar-active-bg: #ef4444; /* red-500 */
+  --sidebar-active-text: #ffffff;
+  --sidebar-heading-text: #9ca3af; /* gray-400 */
+}
+
+.theme-polleria {
+  --sidebar-bg: #4A2E2A; /* Marrón rojizo oscuro */
+  --sidebar-text: #E5D9D3; /* Un beige claro para el texto */
+  --sidebar-text-hover: #FFFFFF;
+  --sidebar-bg-hover: #6B463F; /* Un marrón más claro para el hover */
+  --sidebar-active-bg: #FBBF24; /* Ámbar para el elemento activo */
+  --sidebar-active-text: #4A2E2A; /* El texto del activo usa el color de fondo */
+  --sidebar-heading-text: #FBBF24; /* Ámbar para los títulos */
+}
