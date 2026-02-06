@@ -12,8 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Habilitar CORS globalmente para API y SPA
-        $middleware->use([\Illuminate\Http\Middleware\HandleCors::class]);
+        // CORS personalizado para manejar preflight requests
+        $middleware->prepend(\App\Http\Middleware\Cors::class);
 
         // Middleware para leer el token desde la cookie HttpOnly
         $middleware->prepend(\App\Http\Middleware\AuthenticateWithCookie::class);

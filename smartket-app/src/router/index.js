@@ -1,14 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authStore } from '../store/auth'
 
-// Public and private views
-const Dashboard = () => import('../views/Dashboard.vue')
-const Productos = () => import('../views/Productos.vue')
-const BusinessTypeSettings = () => import('../views/BusinessTypeSettings.vue')
+// Compartido - Views usado por todos los negocios
+const Dashboard = () => import('../views/compartido/Dashboard.vue')
+const Productos = () => import('../views/compartido/Productos.vue')
+const Ventas = () => import('../views/compartido/Ventas.vue')
+const Finanzas = () => import('../views/compartido/Finanzas.vue')
+const Inventario = () => import('../views/compartido/Inventario.vue')
+const Clientes = () => import('../views/compartido/Clientes.vue')
+const Proveedores = () => import('../views/compartido/Proveedores.vue')
+const Reportes = () => import('../views/compartido/Reportes.vue')
+
+// Core - Configuración y onboarding del sistema
+const BusinessTypeSettings = () => import('../views/core/BusinessTypeSettings.vue')
+const Onboarding = () => import('../views/core/Onboarding.vue')
+const SetupFiscal = () => import('../views/core/SetupFiscal.vue')
+const SelectBranch = () => import('../views/core/SelectBranch.vue')
+const OwnerDashboard = () => import('../views/core/OwnerDashboard.vue')
+
+// AppLayout
 const AppLayout = () => import('../layouts/AppLayout.vue')
-const Onboarding = () => import('../views/Onboarding.vue')
-const SetupFiscal = () => import('../views/SetupFiscal.vue')
-const SelectBranch = () => import('../views/SelectBranch.vue')
 
 // Pollería module views (lazy-loaded)
 const PolleriaMesero = () => import('../views/polleria/MeseroOrders.vue')
@@ -18,12 +29,11 @@ const PolleriaDelivery = () => import('../views/polleria/DeliveryScreen.vue')
 const PolleriaAlmacen = () => import('../views/polleria/AlmacenInventory.vue')
 const PolleriaAdmin = () => import('../views/polleria/AdminPanel.vue')
 
-const ComingSoon = () => import('../views/ComingSoon.vue')
-const OwnerDashboard = () => import('../views/core/OwnerDashboard.vue')
-
 // Admin System Views
 const RolesPage = () => import('../views/admin/RolesPage.vue')
 const StaffPage = () => import('../views/admin/StaffPage.vue')
+
+const ComingSoon = () => import('../views/ComingSoon.vue')
 
 
 const routes = [
@@ -39,13 +49,13 @@ const routes = [
 
       { path: 'productos', name: 'productos', component: Productos },
 
-      // Core Business Modules (Placeholders for now)
-      { path: 'ventas', name: 'ventas', component: ComingSoon },
-      { path: 'inventario', name: 'inventario', component: ComingSoon },
-      { path: 'clientes', name: 'clientes', component: ComingSoon },
-      { path: 'proveedores', name: 'proveedores', component: ComingSoon },
-      { path: 'finanzas', name: 'finanzas', component: ComingSoon },
-      { path: 'reportes', name: 'reportes', component: ComingSoon },
+      // Core Business Modules
+      { path: 'ventas', name: 'ventas', component: Ventas },
+      { path: 'inventario', name: 'inventario', component: Inventario },
+      { path: 'clientes', name: 'clientes', component: Clientes },
+      { path: 'proveedores', name: 'proveedores', component: Proveedores },
+      { path: 'finanzas', name: 'finanzas', component: Finanzas },
+      { path: 'reportes', name: 'reportes', component: Reportes },
 
       { path: 'settings/business-type', name: 'settings-business-type', component: BusinessTypeSettings },
       { path: 'onboarding', name: 'onboarding', component: Onboarding },
@@ -83,7 +93,7 @@ export const router = createRouter({
 router.beforeEach(async (to) => {
   // 1. Capturar y almacenar el token/tenant si vienen en la URL desde el landing.
   const tokenFromQuery = to.query.token
-  const tenantIdFromQuery = to.query.tenantId
+  const tenantIdFromQuery = to.query.tenant_id || to.query.tenantId // Soporte ambos formatos
 
   if (tokenFromQuery && tenantIdFromQuery) {
     localStorage.setItem('smartket_token', tokenFromQuery)

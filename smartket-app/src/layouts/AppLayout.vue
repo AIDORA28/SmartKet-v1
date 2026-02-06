@@ -8,7 +8,7 @@
     />
 
     <!-- Main Content Area -->
-    <div class="lg:pl-72 flex flex-col flex-1 w-full">
+    <div class="lg:pl-72 flex flex-col flex-1 w-full transition-all duration-300">
       <TheHeader 
         :user="user"
         :current-tenant="currentTenant"
@@ -20,7 +20,7 @@
       />
 
       <!-- Page Content -->
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50">
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
         <div class="container mx-auto p-4 md:p-8">
             <SetupPrompt :visible="showSetupPrompt" @go-setup="goSetup" @dismiss="dismissSetup" />
             <router-view v-slot="{ Component }">
@@ -37,11 +37,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { authStore } from '../store/auth'
+import { authStore } from '@/store/auth'
 import { api, audit } from '@/api'
 import SetupPrompt from '@/components/SetupPrompt.vue'
-import TheSidebar from '@/components/layout/TheSidebar.vue'
-import TheHeader from '@/components/layout/TheHeader.vue'
+import TheSidebar from '@/components/compartido/layout/TheSidebar.vue'
+import TheHeader from '@/components/compartido/layout/TheHeader.vue'
 
 const router = useRouter()
 const sidebarOpen = ref(false)

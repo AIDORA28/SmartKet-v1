@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\RegisterController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\TenantController;
-use App\Http\Controllers\Api\AuditController;
-use App\Http\Controllers\Api\SetupController;
-use App\Http\Controllers\Api\PolleriaController;
+use App\Http\Controllers\Api\Core\AuthController;
+use App\Http\Controllers\Api\Core\RegisterController;
+use App\Http\Controllers\Api\Compartido\ProductController;
+use App\Http\Controllers\Api\Core\TenantController;
+use App\Http\Controllers\Api\Core\AuditController;
+use App\Http\Controllers\Api\Core\SetupController;
+use App\Http\Controllers\Api\Polleria\PolleriaController;
 
 Route::post('/register', [RegisterController::class, 'register'])
     ->middleware('throttle:10,1')
@@ -47,12 +47,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // --- Gestión de Staff (solo para admins o usuarios con permiso) ---
         Route::middleware('permission:staff.manage')->group(function () {
-            Route::apiResource('staff', \App\Http\Controllers\Api\StaffController::class);
-            Route::get('/roles', fn() => \App\Models\Role::all());
-            Route::apiResource('branches', \App\Http\Controllers\Api\BranchController::class); // <--- NUEVA RUTA
+            Route::apiResource('staff', \App\Http\Controllers\Api\Admin\StaffController::class);
+            Route::get('/roles', fn() => \App\Models\Core\Role::all());
+            Route::apiResource('branches', \App\Http\Controllers\Api\Core\BranchController::class); // <--- NUEVA RUTA
         });    
-            Route::get('/modules', [\App\Http\Controllers\Api\ModuleController::class, 'index']);
-            Route::post('/tenant/modules', [\App\Http\Controllers\Api\ModuleController::class, 'sync']);
+            Route::get('/modules', [\App\Http\Controllers\Api\Core\ModuleController::class, 'index']);
+            Route::post('/tenant/modules', [\App\Http\Controllers\Api\Core\ModuleController::class, 'sync']);
 
         // --- Módulo Pollería (requiere tenant activo) ---
         Route::get('/polleria/menu', [PolleriaController::class, 'menu']);

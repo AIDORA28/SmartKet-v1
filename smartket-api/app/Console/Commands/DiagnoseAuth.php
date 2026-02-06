@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use App\Models\User;
-use App\Models\Tenant;
+use App\Models\Core\User;
+use App\Models\Core\Tenant;
 
 class DiagnoseAuth extends Command
 {

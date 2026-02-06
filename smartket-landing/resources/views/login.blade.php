@@ -176,7 +176,12 @@
             try {
                 const res = await fetch("{{ env('API_BASE_URL', 'http://localhost:8000') }}/api/login", {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json' 
+                    },
                     body: JSON.stringify(payload),
                 });
 

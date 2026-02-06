@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\TenantService;
+use App\Services\Core\TenantService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 

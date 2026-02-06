@@ -3,8 +3,8 @@
 namespace App\TenantFinders;
 
 use Illuminate\Http\Request;
-use App\Models\Tenant;
 use Spatie\Multitenancy\TenantFinder\TenantFinder;
+use App\Models\Core\Tenant;
 
 class HeaderTenantFinder extends TenantFinder
 {

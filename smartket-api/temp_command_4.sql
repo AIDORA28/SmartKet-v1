@@ -1,1 +1,0 @@
-psql -h 127.0.0.1 -p 5434 -U postgres -d smartket_admin_db -c "SELECT * FROM modules;"
